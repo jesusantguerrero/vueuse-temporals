@@ -1,14 +1,6 @@
-# 🪝 vue-composable-starter
+# 🪝 vueuse-temporals
 
-A minimalist starting point for your next Vue 3 composable.
-
-- 🧩 **TypeScript** by default
-- 📦 **PNPM** as package manager
-- 🤹 Testing using [**Vitest**](https://vitest.dev)
-- 🚚 Exports **ESM** and **CJS** bundles
-- 📸 Demo ready to be written and deployed using [**Vite**](https://vitejs.dev)
-
-> Edit [variables](#to-do), implement, test, publish 🏎
+Time related composables extracted from [atmosphere-ui]() 
 
 ## Commands
 
