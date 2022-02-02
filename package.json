@@ -1,0 +1,75 @@
+{
+  "name": "vue-composable-starter",
+  "version": "1.0.0",
+  "description": "🪝 Minimalist starting point for your next Vue Composable",
+  "repository": "https://github.com/Tahul/vue-composable-starter",
+  "bugs": {
+    "url": "https://github.com/Tahul/vue-composable-starter/issues"
+  },
+  "homepage": "https://github.com/Tahul/vue-composable-starter#readme",
+  "keywords": [
+    "vue",
+    "composable"
+  ],
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.cjs"
+    }
+  },
+  "scripts": {
+    "dev": "vitest dev",
+    "dev:demo": "vite",
+    "build": "unbuild",
+    "build:demo": "vite build",
+    "lint": "eslint \"**/*.{vue,ts,js}\"",
+    "lint:fix": "pnpm run lint --write",
+    "test": "pnpm test:types && pnpm test:unit && pnpm test:coverage",
+    "test:types": "tsc --build tsconfig.json",
+    "test:coverage": "vitest run --coverage",
+    "test:unit": "vitest run"
+  },
+  "files": [
+    "dist/**/*",
+    "LICENSE",
+    "README.md"
+  ],
+  "devDependencies": {
+    "@antfu/eslint-config": "^0.14.2",
+    "@typescript-eslint/eslint-plugin": "^5.9.0",
+    "@vitejs/plugin-vue": "^2.0.1",
+    "@vue/compiler-sfc": "^3.2.26",
+    "@vue/eslint-config-prettier": "^7.0.0",
+    "@vue/test-utils": "^2.0.0-beta.13",
+    "@vuedx/typecheck": "^0.7.4",
+    "@vuedx/typescript-plugin-vue": "^0.7.4",
+    "c8": "^7.11.0",
+    "eslint": "^8.6.0",
+    "lint-staged": "^12.1.5",
+    "pascalcase": "^2.0.0",
+    "prettier": "^2.5.1",
+    "typescript": "^4.5.4",
+    "unbuild": "^0.6.7",
+    "vite": "^2.7.10",
+    "vitest": "^0.0.132",
+    "vue": "^3.0.5",
+    "yorkie": "^2.0.0"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write"
+    ],
+    "*.ts?(x)": [
+      "prettier --parser=typescript --write"
+    ]
+  },
+  "author": "Yaël GUILLOUX <yael.guilloux@gmail.com>",
+  "license": "MIT"
+}
