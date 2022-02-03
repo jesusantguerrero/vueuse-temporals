@@ -21,8 +21,9 @@ describe('useDatePager', () => {
     expect(selectedDay.value).toEqual(nextDate)
   })
   it('should select the previous date', () => {
-    const nextDate = subDays(selectedDay.value, 1)
+    console.log(formatDay(selectedDay.value));
+    const previousDate = subDays(selectedDay.value, 1)
     controls.previous()
-    expect(selectedDay.value).toEqual(nextDate)
+    expect(selectedDay.value).toEqual(previousDate)
   })
 })

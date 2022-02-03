@@ -1,5 +1,7 @@
 import { isLastDayOfMonth, startOfDay } from 'date-fns'
 import { ref, watch } from 'vue'
+import type { DateOperation } from './utils'
+import { addMethods, subMethods } from './utils'
 
 interface Props {
   nextMode: string
@@ -12,22 +14,22 @@ export const useDatePager = (props: Props) => {
   // Utils
   const getWeekDays = (date: Date): Array<Date> => {
     const firstDate = new Date(date.setDate(date.getDate() - 4))
-    const selectedWeek: Array<Date> = []
+    const selectedDateRange: Array<Date> = []
     for (let i = 0; i < 7; i++) {
       firstDate.setDate(firstDate.getDate() + 1)
-      selectedWeek.push(startOfDay(new Date(firstDate)))
+      selectedDateRange.push(startOfDay(new Date(firstDate)))
     }
-    return selectedWeek
+    return selectedDateRange
   }
 
   // state
   const firstDayOfWeek = ref(0)
 
   // Week
-  const selectedWeek = ref(getWeekDays(new Date()))
+  const selectedDateRange = ref(getWeekDays(new Date()))
 
   const setWeek = (value: Array<Date>): void => {
-    selectedWeek.value = value || selectedWeek.value
+    selectedDateRange.value = value || selectedDateRange.value
   }
 
   const getCalendarWeek = (date: Date) => {
@@ -61,7 +63,7 @@ export const useDatePager = (props: Props) => {
   }
 
   const checkWeek = () => {
-    selectedWeek.value = getCalendar(new Date())
+    selectedDateRange.value = getCalendar(new Date())
   }
 
   watch(nextMode, checkWeek, { immediate: true })
@@ -76,22 +78,21 @@ export const useDatePager = (props: Props) => {
   watch(
     () => selectedDay.value,
     () => {
-      selectedWeek.value = getCalendar(selectedDay.value)
+      selectedDateRange.value = getCalendar(selectedDay.value)
     }
   )
 
   // controls
   const next = () => {
-    const dayIndex = nextMode.value === 'day' ? 3 : selectedWeek.value.length - 1
-    const date = new Date(selectedWeek.value[dayIndex].setDate(selectedWeek.value[dayIndex].getDate() + 1))
-
-    selectedDay.value = startOfDay(date)
+    const addMethod: DateOperation = addMethods[nextMode.value]
+    const date = addMethod(selectedDay.value, 1)
+    setDay(date)
   }
 
   const previous = () => {
-    const dayIndex = nextMode.value === 'day' ? 3 : 0
-    const date = new Date(selectedWeek.value[dayIndex].setDate(selectedWeek.value[dayIndex].getDate() - 1))
-    selectedDay.value = startOfDay(date)
+    const subMethod: DateOperation = subMethods[nextMode.value]
+    const date = subMethod(selectedDay.value, 1)
+    setDay(date)
   }
 
   checkWeek()
@@ -99,9 +100,9 @@ export const useDatePager = (props: Props) => {
   return {
     // state
     selectedDay,
-    selectedWeek,
-    startDate: selectedWeek.value[0],
-    endDate: selectedWeek.value[6],
+    selectedDateRange,
+    startDate: selectedDateRange.value[0],
+    endDate: selectedDateRange.value[selectedDateRange.value.length - 1],
 
     // methods
     controls: {
