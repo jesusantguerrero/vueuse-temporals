@@ -1,6 +1,6 @@
 {
   "name": "vueuse-temporals",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "🪝 Minimalist starting point for your next Vue Composable",
   "repository": "https://github.com/Tahul/vueuse-temporals",
   "bugs": {
@@ -31,7 +31,8 @@
     "test": "pnpm test:types && pnpm test:unit && pnpm test:coverage",
     "test:types": "tsc --build tsconfig.json",
     "test:coverage": "vitest run --coverage",
-    "test:unit": "vitest run"
+    "test:unit": "vitest run",
+    "prepublishOnly": "npm run build"
   },
   "files": [
     "dist/**/*",
