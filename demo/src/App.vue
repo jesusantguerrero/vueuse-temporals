@@ -1,39 +1,28 @@
 <template>
   <div>
-    <input :value="currentDate" type="date" @change="setDate" />
-    Current value is: {{ selectedDay }}
-    <button @click="controls.previous()"> Prev </button>
-    <div v-for="day in selectedDateRange" :key="day.toISOString()"> 
+    <input :value="currentDate" type="date" placeholder="yyyy-mm-dd" @change="setDate" />
+    The selected day is: {{ selectedDay }}
+    <button @click="controls.previous()">Prev</button>
+    <div v-for="day in selectedSpan" :key="day.toISOString()">
       {{ day }}
     </div>
-    <button @click="controls.next()"> Next </button>
+    <button @click="controls.next()">Next</button>
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent } from 'vue'
+<script lang="ts" setup>
+import { computed } from 'vue'
 import { useDatePager } from '../../src'
 
-export default defineComponent({
-  name: 'App',
-  setup() {
-    const { selectedDay, controls, selectedDateRange } = useDatePager({
-      nextMode: 'day'
-    })
-
-    const currentDate = computed(() => selectedDay.value.toISOString().slice(0, 10))
-    const setDate = (e: Event) => {
-      const target = e.target as HTMLInputElement
-      const date = new Date(Date.parse(target.value))
-      controls.setDay(date);
-    }
-    return {
-      currentDate,
-      setDate,
-      selectedDay,
-      controls,
-      selectedDateRange
-    }
-  }
+const { selectedDay, controls, selectedSpan } = useDatePager({
+  nextMode: 'day'
 })
+
+const currentDate = computed(() => selectedDay.value.toISOString().slice(0, 10))
+const setDate = (e: Event) => {
+  const target = e.target as HTMLInputElement
+  const time = target.value.split('-').map(n => parseInt(n))
+  const date = new Date(time[0], time[1] - 1, time[2])
+  controls.setDay(date)
+}
 </script>

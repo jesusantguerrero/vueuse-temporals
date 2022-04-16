@@ -1,7 +1,6 @@
-import { isLastDayOfMonth, startOfDay } from 'date-fns'
-import { ref, watch } from 'vue'
-import type { DateOperation } from './utils'
-import { addMethods, subMethods } from './utils'
+import { isLastDayOfMonth } from 'date-fns'
+import startOfDay from 'date-fns/startOfDay'
+import { computed, ref, unref, watch } from 'vue'
 
 interface Props {
   nextMode: string
@@ -14,22 +13,22 @@ export const useDatePager = (props: Props) => {
   // Utils
   const getWeekDays = (date: Date): Array<Date> => {
     const firstDate = new Date(date.setDate(date.getDate() - 4))
-    const selectedDateRange: Array<Date> = []
+    const week: Array<Date> = []
     for (let i = 0; i < 7; i++) {
       firstDate.setDate(firstDate.getDate() + 1)
-      selectedDateRange.push(startOfDay(new Date(firstDate)))
+      week.push(startOfDay(new Date(firstDate)))
     }
-    return selectedDateRange
+    return week
   }
 
   // state
   const firstDayOfWeek = ref(0)
 
-  // Week
-  const selectedDateRange = ref(getWeekDays(new Date()))
+  // Date Span
+  const selectedSpan = ref()
 
-  const setWeek = (value: Array<Date>): void => {
-    selectedDateRange.value = value || selectedDateRange.value
+  const setDateSpan = (value: Array<Date>): void => {
+    selectedSpan.value = value || selectedSpan.value
   }
 
   const getCalendarWeek = (date: Date) => {
@@ -59,54 +58,54 @@ export const useDatePager = (props: Props) => {
       month: getCalendarMonth
     }
     const mode = nextMode.value || 'week'
-    return controls[mode](date)
+    return controls[mode](new Date(date))
   }
-
-  const checkWeek = () => {
-    selectedDateRange.value = getCalendar(new Date())
-  }
-
-  watch(nextMode, checkWeek, { immediate: true })
 
   // Day
-  const selectedDay = ref(startOfDay(props.initialDate || new Date()))
+  const selectedDay = ref()
   const setDay = (value: Date) => {
-    const newDate = value || selectedDay.value
-    selectedDay.value = startOfDay(newDate)
+    selectedDay.value = startOfDay(value || selectedDay.value)
+  }
+  setDay(props.initialDate || new Date())
+
+  const checkDateSpan = () => {
+    setDateSpan(getCalendar(selectedDay.value))
   }
 
   watch(
-    () => selectedDay.value,
-    () => {
-      selectedDateRange.value = getCalendar(selectedDay.value)
-    }
+    selectedDay,
+    (newValue, oldValue) => {
+      checkDateSpan()
+    },
+    { immediate: true }
   )
+  watch(nextMode, checkDateSpan)
 
   // controls
   const next = () => {
-    const addMethod: DateOperation = addMethods[nextMode.value]
-    const date = addMethod(selectedDay.value, 1)
+    const dayIndex = nextMode.value === 'day' ? 3 : selectedSpan.value.length - 1
+    const oldSpan = unref(selectedSpan)
+    const date = new Date(oldSpan[dayIndex].setDate(oldSpan[dayIndex].getDate() + 1))
     setDay(date)
   }
 
   const previous = () => {
-    const subMethod: DateOperation = subMethods[nextMode.value]
-    const date = subMethod(selectedDay.value, 1)
+    const dayIndex = nextMode.value === 'day' ? 3 : 0
+    const oldSpan = unref(selectedSpan)
+    const date = new Date(oldSpan[dayIndex].setDate(oldSpan[dayIndex].getDate() - 1))
     setDay(date)
   }
-
-  checkWeek()
 
   return {
     // state
     selectedDay,
-    selectedDateRange,
-    startDate: selectedDateRange.value[0],
-    endDate: selectedDateRange.value[selectedDateRange.value.length - 1],
+    selectedSpan,
+    startDate: computed(() => selectedSpan.value[0]),
+    endDate: computed(() => selectedSpan.value[selectedSpan.value.length - 1]),
 
     // methods
     controls: {
-      setWeek,
+      setDateSpan,
       setDay,
       previous,
       next
