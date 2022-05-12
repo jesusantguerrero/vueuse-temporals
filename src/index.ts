@@ -1,6 +1,7 @@
 import { isLastDayOfMonth } from 'date-fns'
 import startOfDay from 'date-fns/startOfDay'
 import { computed, ref, unref, watch } from 'vue'
+import { isSameDate } from './utils'
 
 interface Props {
   nextMode: string
@@ -75,7 +76,9 @@ export const useDatePager = (props: Props) => {
   watch(
     selectedDay,
     (newValue, oldValue) => {
-      checkDateSpan()
+      if (!isSameDate(newValue, oldValue)) {
+        checkDateSpan()
+      }
     },
     { immediate: true }
   )
