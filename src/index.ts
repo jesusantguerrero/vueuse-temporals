@@ -65,7 +65,9 @@ export const useDatePager = (props: Props) => {
   // Day
   const selectedDay = ref()
   const setDay = (value: Date) => {
-    selectedDay.value = startOfDay(value || selectedDay.value)
+    if (!isSameDate(unref(selectedDay), value)) {
+      selectedDay.value = startOfDay(value || selectedDay.value)
+    }
   }
   setDay(props.initialDate || new Date())
 
