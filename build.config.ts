@@ -19,6 +19,13 @@ export default defineBuildConfig({
       outDir: 'dist',
       name: 'index',
       format: 'cjs',
+      ext: 'js'
+    },
+    {
+      input: 'src/index.ts',
+      outDir: 'dist',
+      name: 'index',
+      format: 'cjs',
       ext: 'cjs'
     }
   ]
