@@ -1,4 +1,5 @@
-import { isLastDayOfMonth } from 'date-fns'
+/* eslint-disable no-console */
+import { isLastDayOfMonth, isSameMonth } from 'date-fns'
 import startOfDay from 'date-fns/startOfDay'
 import { computed, ref, unref, watch } from 'vue'
 import { isSameDate } from './utils'
@@ -8,6 +9,11 @@ interface Props {
   initialDate?: Date
 }
 
+export const PAGER_MODES = {
+  DAY: 'day',
+  WEEK: 'week',
+  MONTH: 'month'
+}
 export const useDatePager = (props: Props) => {
   const nextMode = ref(props.nextMode)
 
@@ -64,38 +70,42 @@ export const useDatePager = (props: Props) => {
 
   // Day
   const selectedDay = ref()
+  const checkDateSpan = () => {
+    setDateSpan(getCalendar(selectedDay.value))
+  }
   const setDay = (value: Date) => {
     if (!isSameDate(unref(selectedDay), value)) {
       selectedDay.value = startOfDay(value || selectedDay.value)
+      checkDateSpan()
     }
   }
   setDay(props.initialDate || new Date())
 
-  const checkDateSpan = () => {
-    setDateSpan(getCalendar(selectedDay.value))
-  }
-
   watch(
     selectedDay,
     (newValue, oldValue) => {
-      if (!isSameDate(newValue, oldValue)) {
+      if (
+        (nextMode.value === 'day' && !isSameDate(newValue, oldValue)) ||
+        (nextMode.value === 'month' && !isSameMonth(newValue, oldValue))
+      ) {
         checkDateSpan()
       }
     },
     { immediate: true }
   )
-  watch(nextMode, checkDateSpan)
+
+  watch(nextMode, checkDateSpan, { immediate: true })
 
   // controls
   const next = () => {
-    const dayIndex = nextMode.value === 'day' ? 3 : selectedSpan.value.length - 1
+    const dayIndex = nextMode.value === PAGER_MODES.DAY ? 3 : selectedSpan.value.length - 1
     const oldSpan = unref(selectedSpan)
     const date = new Date(oldSpan[dayIndex].setDate(oldSpan[dayIndex].getDate() + 1))
     setDay(date)
   }
 
   const previous = () => {
-    const dayIndex = nextMode.value === 'day' ? 3 : 0
+    const dayIndex = nextMode.value === PAGER_MODES.DAY ? 3 : 0
     const oldSpan = unref(selectedSpan)
     const date = new Date(oldSpan[dayIndex].setDate(oldSpan[dayIndex].getDate() - 1))
     setDay(date)
@@ -105,8 +115,8 @@ export const useDatePager = (props: Props) => {
     // state
     selectedDay,
     selectedSpan,
-    startDate: computed(() => selectedSpan.value[0]),
-    endDate: computed(() => selectedSpan.value[selectedSpan.value.length - 1]),
+    startDate: computed(() => selectedSpan.value && selectedSpan.value[0]),
+    endDate: computed(() => selectedSpan.value && selectedSpan.value[selectedSpan.value.length - 1]),
 
     // methods
     controls: {
