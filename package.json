@@ -1,7 +1,7 @@
 {
   "name": "vueuse-temporals",
   "version": "1.3.0",
-  "description": "🪝 Minimalist starting point for your next Vue Composable",
+  "description": "Date related composables for atmosphere-ui",
   "repository": "https://github.com/Tahul/vueuse-temporals",
   "bugs": {
     "url": "https://github.com/Tahul/vueuse-temporals/issues"
@@ -31,8 +31,8 @@
     "build": "unbuild",
     "build:demo": "vite build",
     "lint": "eslint \"**/*.{vue,ts,js}\"",
-    "lint:fix": "pnpm run lint --write",
-    "test": "pnpm test:types && pnpm test:unit && pnpm test:coverage",
+    "lint:fix": "npm run lint --write",
+    "test": "npm run test:types && npm run test:unit && npm run test:coverage",
     "test:types": "tsc --build tsconfig.json",
     "test:coverage": "vitest run --coverage",
     "test:unit": "vitest run",
