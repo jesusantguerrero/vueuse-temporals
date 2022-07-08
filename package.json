@@ -1,6 +1,6 @@
 {
   "name": "vueuse-temporals",
-  "version": "1.3.0",
+  "version": "1.4.2",
   "description": "Date related composables for atmosphere-ui",
   "repository": "https://github.com/Tahul/vueuse-temporals",
   "bugs": {
