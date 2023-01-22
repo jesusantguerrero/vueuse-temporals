@@ -1,6 +1,6 @@
 {
   "name": "vueuse-temporals",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Date related composables for atmosphere-ui",
   "repository": "https://github.com/Tahul/vueuse-temporals",
   "bugs": {
@@ -30,6 +30,7 @@
     "dev:demo": "vite",
     "build": "unbuild",
     "build:demo": "vite build",
+    "release": "npm run build && bumpp --commit --tag --push && npm publish",
     "lint": "eslint \"**/*.{vue,ts,js}\"",
     "lint:fix": "npm run lint --write",
     "test": "npm run test:types && npm run test:unit && npm run test:coverage",
@@ -53,6 +54,7 @@
     "@vue/test-utils": "^2.0.0-beta.13",
     "@vuedx/typecheck": "^0.7.4",
     "@vuedx/typescript-plugin-vue": "^0.7.4",
+    "bumpp": "^8.2.1",
     "c8": "^7.11.0",
     "date-fns": "^2.28.0",
     "eslint": "^8.6.0",
