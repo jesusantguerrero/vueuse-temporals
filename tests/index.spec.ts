@@ -1,8 +1,19 @@
 import { ref } from 'vue'
 import { describe, expect, it } from 'vitest'
-import { addDays, addWeeks, startOfDay, subDays, subWeeks } from 'date-fns'
-import { PAGER_MODES, useDatePager } from '../src'
-import { isDateIn } from './../src/utils/index'
+import {
+  addDays,
+  addMonths,
+  addWeeks,
+  format,
+  startOfDay,
+  startOfMonth,
+  subDays,
+  subMonths,
+  subWeeks,
+  subYears
+} from 'date-fns'
+import { PAGER_MODES, getCalendarISO, useDatePager } from '../src'
+import { isDateIn, isSameDate } from './../src/utils/index'
 
 const formatDay = (date: Date) => date.toISOString().slice(0, 10)
 describe('useDatePager default', () => {
@@ -50,5 +61,66 @@ describe('useDatePager week mode', () => {
     const previousWeek = subWeeks(selectedDay.value, 1)
     controls.previous()
     expect(isDateIn(previousWeek, selectedSpan.value)).toBeTruthy()
+  })
+})
+
+describe('useDatePager iso duration mode', () => {
+  it('should return valid ranges from iso Duration Format', () => {
+    const dates = getCalendarISO(new Date(), 'P5D')
+
+    expect(dates.length).toBe(6)
+  })
+  it('should return valid ranges from iso Duration Format Fixed', () => {
+    const dates = getCalendarISO(new Date(), 'P3M', { fixedMonth: true })
+
+    const start = startOfMonth(subDays(new Date(), 90))
+
+    expect(isSameDate(dates[0], start)).toBe(true)
+  })
+
+  it('should return valid ranges from iso Duration Format', () => {
+    const dates = getCalendarISO(new Date(), 'P3M')
+
+    const start = subDays(new Date(), 90)
+
+    expect(isSameDate(dates[0], start)).toBe(true)
+  })
+
+  it('should select the next 3 months', () => {
+    const initialDate = ref(new Date())
+    const { controls, selectedDay, endDate } = useDatePager({
+      nextMode: 'P3M',
+      initialDate: initialDate.value
+    })
+
+    const next3Months = addMonths(selectedDay.value, 3)
+    controls.next()
+
+    expect(isSameDate(next3Months, endDate.value)).toBeTruthy()
+  })
+
+  it('should select the previous months', () => {
+    const initialDate = ref(new Date())
+    const { controls, selectedDay, endDate } = useDatePager({
+      nextMode: 'P3M',
+      initialDate: initialDate.value
+    })
+
+    const ThreeMonthsAgo = subDays(selectedDay.value, 90)
+    controls.previous()
+
+    expect(isSameDate(ThreeMonthsAgo, endDate.value)).toBeTruthy()
+  })
+  it('should select the previous year', () => {
+    const initialDate = ref(new Date())
+    const { controls, selectedDay, endDate } = useDatePager({
+      nextMode: 'P1Y',
+      initialDate: initialDate.value
+    })
+
+    const ThreeMonthsAgo = subYears(selectedDay.value, 1)
+    controls.previous()
+
+    expect(isSameDate(ThreeMonthsAgo, endDate.value)).toBeTruthy()
   })
 })

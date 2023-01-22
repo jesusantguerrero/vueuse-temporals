@@ -1,21 +1,49 @@
 /* eslint-disable no-console */
-import { isLastDayOfMonth, isSameMonth } from 'date-fns'
+import {
+  addMilliseconds,
+  eachDayOfInterval,
+  isLastDayOfMonth,
+  isSameMonth,
+  startOfMonth,
+  subDays,
+  subMilliseconds
+} from 'date-fns'
 import startOfDay from 'date-fns/startOfDay'
 import { computed, ref, unref, watch } from 'vue'
+import { Duration } from 'luxon'
 import { isSameDate } from './utils'
 
 interface Props {
   nextMode: string
   initialDate?: Date
+  options?: {
+    fixedMonth: boolean
+  }
 }
 
 export const PAGER_MODES = {
   DAY: 'day',
   WEEK: 'week',
-  MONTH: 'month'
+  MONTH: 'month',
+  CUSTOM: 'custom'
+}
+
+export const getCalendarISO = (date: Date, nextMode: string, options = { fixedMonth: false }) => {
+  const ms = Duration.fromISO(nextMode).toMillis()
+  let start = subMilliseconds(date, ms)
+
+  if (options.fixedMonth) {
+    start = startOfMonth(start)
+  }
+
+  return eachDayOfInterval({
+    start,
+    end: date
+  })
 }
 export const useDatePager = (props: Props) => {
   const nextMode = ref(props.nextMode)
+  const options = ref(props.options)
 
   // Utils
   const getWeekDays = (date: Date): Array<Date> => {
@@ -58,20 +86,25 @@ export const useDatePager = (props: Props) => {
     return month
   }
 
-  const getCalendar = (date: Date): Array<Date> => {
+  const getCalendar = (date: Date, nextMode: string, options: any): Array<Date> => {
     const controls: { [key: string]: Function } = {
       day: getWeekDays,
       week: getCalendarWeek,
-      month: getCalendarMonth
+      month: getCalendarMonth,
+      iso: getCalendarISO
     }
-    const mode = nextMode.value || 'week'
-    return controls[mode](new Date(date))
+
+    let mode = nextMode || 'week'
+    if (nextMode.startsWith('P')) {
+      mode = 'iso'
+    }
+    return controls[mode](new Date(date), nextMode, options)
   }
 
   // Day
   const selectedDay = ref()
   const checkDateSpan = () => {
-    setDateSpan(getCalendar(selectedDay.value))
+    setDateSpan(getCalendar(selectedDay.value, nextMode.value, options))
   }
   const setDay = (value: Date) => {
     if (!isSameDate(unref(selectedDay), value)) {
@@ -98,17 +131,33 @@ export const useDatePager = (props: Props) => {
 
   // controls
   const next = () => {
-    const dayIndex = nextMode.value === PAGER_MODES.DAY ? 3 : selectedSpan.value.length - 1
-    const oldSpan = unref(selectedSpan)
-    const date = new Date(oldSpan[dayIndex].setDate(oldSpan[dayIndex].getDate() + 1))
-    setDay(date)
+    if (nextMode.value.startsWith('P')) {
+      const ms = Duration.fromISO(nextMode.value).toMillis()
+      const date = addMilliseconds(selectedDay.value, ms)
+
+      setDay(date)
+    } else {
+      const dayIndex = nextMode.value === PAGER_MODES.DAY ? 3 : selectedSpan.value.length - 1
+      const oldSpan = unref(selectedSpan)
+      const date = new Date(oldSpan[dayIndex].setDate(oldSpan[dayIndex].getDate() + 1))
+
+      setDay(date)
+    }
   }
 
   const previous = () => {
-    const dayIndex = nextMode.value === PAGER_MODES.DAY ? 3 : 0
-    const oldSpan = unref(selectedSpan)
-    const date = new Date(oldSpan[dayIndex].setDate(oldSpan[dayIndex].getDate() - 1))
-    setDay(date)
+    if (nextMode.value.startsWith('P')) {
+      const days = Duration.fromISO(nextMode.value).as('days')
+      const date = subDays(selectedDay.value, days)
+
+      setDay(startOfDay(date))
+    } else {
+      const dayIndex = nextMode.value === PAGER_MODES.DAY ? 3 : 0
+      const oldSpan = unref(selectedSpan)
+      const date = new Date(oldSpan[dayIndex].setDate(oldSpan[dayIndex].getDate() - 1))
+
+      setDay(date)
+    }
   }
 
   return {
