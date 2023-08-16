@@ -2,11 +2,11 @@
   "name": "vueuse-temporals",
   "version": "1.5.0",
   "description": "Date related composables for atmosphere-ui",
-  "repository": "https://github.com/Tahul/vueuse-temporals",
+  "repository": "https://github.com/jesusantguerrero/vueuse-temporals",
   "bugs": {
-    "url": "https://github.com/Tahul/vueuse-temporals/issues"
+    "url": "https://github.com/jesusantguerrero/vueuse-temporals/issues"
   },
-  "homepage": "https://github.com/Tahul/vueuse-temporals#readme",
+  "homepage": "https://github.com/jesusantguerrero/vueuse-temporals#readme",
   "keywords": [
     "vue",
     "composable"
