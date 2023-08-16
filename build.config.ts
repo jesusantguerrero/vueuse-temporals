@@ -28,5 +28,6 @@ export default defineBuildConfig({
       format: 'cjs',
       ext: 'cjs'
     }
-  ]
+  ],
+  failOnWarn: false
 })
