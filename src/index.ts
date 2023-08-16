@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import {
   addMilliseconds,
   eachDayOfInterval,
@@ -28,7 +27,7 @@ export const PAGER_MODES = {
   CUSTOM: 'custom'
 }
 
-export const getCalendarISO = (date: Date, nextMode: string, options = { fixedMonth: false }) => {
+export function getCalendarISO(date: Date, nextMode: string, options = { fixedMonth: false }) {
   const ms = Duration.fromISO(nextMode).toMillis()
   let start = subMilliseconds(date, ms)
 
@@ -41,7 +40,7 @@ export const getCalendarISO = (date: Date, nextMode: string, options = { fixedMo
     end: date
   })
 }
-export const useDatePager = (props: Props) => {
+export function useDatePager(props: Props) {
   const nextMode = ref(props.nextMode)
   const options = ref(props.options)
 

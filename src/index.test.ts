@@ -11,8 +11,8 @@ import {
   subWeeks,
   subYears
 } from 'date-fns'
-import { PAGER_MODES, getCalendarISO, useDatePager } from '../src'
-import { isDateIn, isSameDate } from './../src/utils/index'
+import { isDateIn, isSameDate } from './utils/index'
+import { PAGER_MODES, getCalendarISO, useDatePager } from '.'
 
 const formatDay = (date: Date) => date.toISOString().slice(0, 10)
 describe('useDatePager default', () => {
