@@ -4,7 +4,6 @@ import {
   addDays,
   addMonths,
   addWeeks,
-  format,
   startOfDay,
   startOfMonth,
   subDays,
@@ -61,6 +60,29 @@ describe('useDatePager week mode', () => {
     const previousWeek = subWeeks(selectedDay.value, 1)
     controls.previous()
     expect(isDateIn(previousWeek, selectedSpan.value)).toBeTruthy()
+  })
+})
+describe('useDatePager month mode', () => {
+  const initialDate = ref(new Date())
+
+  const { controls, selectedDay, selectedSpan } = useDatePager({
+    nextMode: PAGER_MODES.MONTH,
+    initialDate: initialDate.value
+  })
+
+  it('should have today as selected day', () => {
+    expect(formatDay(new Date())).toEqual(formatDay(selectedDay.value))
+  })
+
+  it('should select the next month', () => {
+    const nextMonth = addMonths(selectedDay.value, 1)
+    controls.next()
+    expect(isDateIn(nextMonth, selectedSpan.value)).toBeTruthy()
+  })
+  it('should select the previous month', () => {
+    const previousMonth = subMonths(selectedDay.value, 1)
+    controls.previous()
+    expect(isDateIn(previousMonth, selectedSpan.value)).toBeTruthy()
   })
 })
 

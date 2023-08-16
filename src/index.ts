@@ -101,6 +101,10 @@ export const useDatePager = (props: Props) => {
     return controls[mode](new Date(date), nextMode, options)
   }
 
+  const setMode = (value: string) => {
+    nextMode.value = value
+  }
+
   // Day
   const selectedDay = ref()
   const checkDateSpan = () => {
@@ -171,6 +175,7 @@ export const useDatePager = (props: Props) => {
     controls: {
       setDateSpan,
       setDay,
+      setMode,
       previous,
       next
     }
